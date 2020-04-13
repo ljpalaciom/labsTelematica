@@ -1,7 +1,6 @@
 from mrjob.job import MRJob, MRStep
+
 # 3 exercise
-
-
 class MRCompany(MRJob):
     def steps(self):
         return [
@@ -11,8 +10,9 @@ class MRCompany(MRJob):
         ]
 
     def mapper(self, _, line):
-        company, price, current_date = line.split(",")
-        yield company, (price, current_date)
+        if len(line) > 0 and line != "company,price,date":
+            company, price, current_date = line.split(",")
+            yield company, (price, current_date)
 
     def reducer_date_min_price(self, key, values):
         price_key = lambda value: float(value[0])
