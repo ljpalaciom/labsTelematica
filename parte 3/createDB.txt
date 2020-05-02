@@ -1,0 +1,32 @@
+CREATE DATABASE mybd
+
+use mydb;
+CREATE EXTERNAL TABLE HDI (id INT, country STRING, hdi FLOAT, lifeex INT, mysch INT, eysch INT, gni INT) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE 
+LOCATION 's3://ljpalaciomdatasets/datasets/onu/hdi/'
+
+use mydb;
+CREATE EXTERNAL TABLE EXPO (country STRING, expct FLOAT) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE 
+LOCATION 's3://ljpalaciomdatasets/datasets/onu/export/'
+
+
+use <MYDB>;
+CREATE EXTERNAL TABLE docs (line STRING) 
+STORED AS TEXTFILE 
+LOCATION 's3://ljpalaciomdatasets/datasets/gutenberg-small/';
+
+
+CREATE EXTERNAL TABLE resultquery (word STRING, count INT)  
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','  
+STORED AS TEXTFILE  
+LOCATION 's3://ljpalaciomdatasets/datasets/resultquery/';
+
+INSERT OVERWRITE TABLE resultquery
+SELECT word, count(1) AS count FROM (SELECT explode(split(line,' ')) AS word FROM docs) w 
+GROUP BY word 
+ORDER BY count DESC LIMIT 10;
+
+

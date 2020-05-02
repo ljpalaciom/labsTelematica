@@ -1,0 +1,12 @@
+mysql -u admin -p -h database-1.cufxcjpvfdwm.us-east-1.rds.amazonaws.com
+St026320201*
+sudo sqoop import --connect jdbc:mysql://database-1.cufxcjpvfdwm.us-east-1.rds.amazonaws.com:3306/cursodb --username admin -P --table employee --target-dir /user/root/mysqlOut
+sudo sqoop create-hive-table --connect jdbc:mysql://database-1.cufxcjpvfdwm.us-east-1.rds.amazonaws.com:3306/cursodb --username admin -P --table employee --hive-database cursodb --hive-table employee --mysql-delimiters
+sudo sqoop import --connect jdbc:mysql://database-1.cufxcjpvfdwm.us-east-1.rds.amazonaws.com:3306/cursodb --username admin -P --table employee --hive-import --hive-database cursodb --hive-table employee --mysql-delimiters
+sudo sqoop import-all-tables --connect jdbc:mysql://database-1.cufxcjpvfdwm.us-east-1.rds.amazonaws.com:3306/retail_db --username=retail_dba --password=retail_dba --hive-database retail_db --create-hive-table --warehouse-dir=/tmp/mysqlOut10 --hive-import --mysql-delimiters
+
+
+sudo beeline -u jdbc:hive2://localhost:10000/username_emps -n ec2-user
+load data inpath '/user/root/mysqlOut/part-m-00001' into table username_emps;
+
+sqoop export --connect jdbc:mysql://database-1.cufxcjpvfdwm.us-east-1.rds.amazonaws.com:3306/cursodb --username curso -P --table username_employee2 --export-dir /user/root/mysqlOut
